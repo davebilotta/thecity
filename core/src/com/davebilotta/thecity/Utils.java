@@ -13,4 +13,10 @@ public class Utils {
 			System.out.println(message);
 		}
 	}
+	
+	public static void log (float message) {
+		if (TheCity.DEBUG_MODE) {
+			System.out.println(message);
+		}
+	}
 }
