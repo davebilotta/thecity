@@ -16,6 +16,7 @@ public class Person {
 	private Person spouse;
 	
 	private Gender gender;
+	private float ageSeconds;
 	
 	public enum Gender {
 		MALE,FEMALE
@@ -38,6 +39,7 @@ public class Person {
 		this.hunger = 0;
 		this.thirst = 0;
 		this.money = 0;
+		this.ageSeconds = 0;
 
 		Utils.log("Creating " + this.gender + " with intelligence: " + this.intelligence + ", strength: " + this.strength);
 	}
@@ -75,4 +77,12 @@ public class Person {
 		return gender;
 	}
 
+	public float getAge() {
+		return ageSeconds;
+	}
+	
+	public void increaseAge(float delta) {
+		this.ageSeconds+=delta;
+	}
+	
 }

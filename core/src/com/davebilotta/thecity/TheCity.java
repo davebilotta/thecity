@@ -32,6 +32,8 @@ public class TheCity extends Game {
 	public void update (float delta) {
 		this.delta +=delta;
 		
+		this.city.ageCitizens(delta);
+		
 		if (this.delta > EVENT_THRESHOLD) {
 			this.delta = 0;
 			this.eventManager.newEvent();

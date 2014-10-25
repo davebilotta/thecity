@@ -29,6 +29,12 @@ public class City {
 	public void addCitizen(TheCity game) {
 		citizens.add(new Person(citizens.size()+1,game));
 	}
+	
+	public void addCitizens(TheCity game,int size) {
+		for (int i = 0; i < size; i ++) {
+			citizens.add(new Person(citizens.size()+1,game));
+		}
+	}
 
 	
 	private int numCitizens() {
@@ -36,12 +42,12 @@ public class City {
 	}
 	
 	private double averageIntelligence() {
-		Iterator i = citizens.iterator();
+		Iterator<Person> i = citizens.iterator();
 		Person p;
 		double intelligence = 0;
 		
 		while (i.hasNext()) {
-			p = (Person)i.next();
+			p = i.next();
 			intelligence+= (double)p.getIntelligence();
 		}
 		
@@ -49,12 +55,12 @@ public class City {
 	}
 	
 	private double averageStrength() {
-		Iterator i = citizens.iterator();
+		Iterator<Person> i = citizens.iterator();
 		Person p;
 		double strength = 0;
 		
 		while (i.hasNext()) {
-			p = (Person)i.next();
+			p = i.next();
 			strength+= (double)p.getStrength();
 		}
 		
@@ -62,25 +68,69 @@ public class City {
 	}
 	
 	private double averageWealth() {
-		Iterator i = citizens.iterator();
+		Iterator<Person> i = citizens.iterator();
 		Person p;
 		double money = 0;
 		
 		while (i.hasNext()) {
-			p = (Person)i.next();
+			p = i.next();
 			money+= (double)p.getMoney();
 		}
 		
 		return (double) (money/citizens.size());
 	}
 	
+	private double averageAge() {
+		Iterator<Person> i = citizens.iterator();
+		Person p;
+		double age = 0;
+		
+		while (i.hasNext()) {
+			p = i.next();
+			age+= (double)p.getAge();
+		}
+		
+		return (double) (age/citizens.size());
+	}
+	
+	private float[] ageStats() {
+		// returns min, max, average ages
+		
+		Iterator<Person> i = citizens.iterator();
+		Person p;
+		float[] stats = new float[3];
+		
+		float max = 0f;
+		float min = 9999999999f;
+		float age = 0f;
+		float a;
+		
+		while (i.hasNext()) {
+			p = i.next();
+			a = (float) p.getAge();
+			if (a > max) { 
+				max = a;
+			}
+			if (a < min) {
+				min = a;
+			}
+			
+			age += a;
+		}
+		
+		float avg = (float) (age/citizens.size());
+		
+		return new float[]{min,max,avg};
+		
+	}
+	
 	private ArrayList<Person> getCitizens(Gender gender) {
-		Iterator i = citizens.iterator();
+		Iterator<Person> i = citizens.iterator();
 		ArrayList<Person> l = new ArrayList<Person>();
 		Person p;
 		
 		while (i.hasNext()) {
-			p = (Person)i.next();
+			p = i.next();
 			if (p.getGender() == gender) {
 				l.add(p);
 			}
@@ -88,12 +138,30 @@ public class City {
 		return l;
 	}
 	
+	public void ageCitizens(float delta) {
+		Iterator<Person> i = citizens.iterator();
+		
+		Person p;
+		
+		while (i.hasNext()) {
+			p = i.next();
+			p.increaseAge(delta);
+		}
+	}
+	
 	public void reportStatus() {
 		Utils.log("***** Total population: " + citizens.size() + " citizens *****");
-		Utils.log("Number males: " + getCitizens(Gender.MALE).size());
-		Utils.log("Number females: " + getCitizens(Gender.FEMALE).size());
+		int m = getCitizens(Gender.MALE).size();
+		int f = getCitizens(Gender.FEMALE).size();
+		
+		Utils.log("        Number males: " + m + " (" + (double)(((double)m/(m+f))*100) + "%)");
+		Utils.log("      Number females: " + f + " (" + (double)(((double)f/(m+f))*100) + "%)");
 		Utils.log("Average intelligence: " + averageIntelligence());
-		Utils.log("Average strength: " + averageStrength());
-		Utils.log("Average wealth: " + averageWealth());
+		Utils.log("    Average strength: " + averageStrength());
+		Utils.log("      Average wealth: " + averageWealth());
+		
+		float[] stats = ageStats();
+		
+		Utils.log("Youngest: " + stats[0] + ", oldest: "+stats[1] + ", average: " + stats[2]);
 	}
 }

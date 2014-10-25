@@ -30,8 +30,11 @@ public class EventManager {
 	}
 	
 	public void newEvent() {
-		Utils.log("NEW EVENT");
-		this.game.city.addCitizen(game);
+		// This adds a single one
+		//this.game.city.addCitizen(game);
+		
+		// This adds a group
+		this.game.city.addCitizens(game,10000);
 		
 	}
 }
