@@ -34,7 +34,7 @@ public class EventManager {
 		//this.game.city.addCitizen(game);
 		
 		// This adds a group
-		this.game.city.addCitizens(game,10000);
+		this.game.city.addCitizens(game,5);
 		
 	}
 }

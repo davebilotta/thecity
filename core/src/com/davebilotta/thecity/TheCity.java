@@ -14,8 +14,18 @@ public class TheCity extends Game {
 	GameScreen screen;
 	
 	// Used for timing/generating events
-	final float EVENT_THRESHOLD = 5f;  // Number of seconds in between events
+	final float EVENT_THRESHOLD = 10f;  // Number of seconds in between events
 	float delta = 0f;
+	
+	public static final int WORLD_WIDTH = 5000;    // Width (in tiles) of the entire world
+	public static final int WORLD_HEIGHT = 5000;   // Height (in tiles) of the entire world
+	
+	// TODO: This needs to depend on device height/width
+	public static final int VIEW_WIDTH = 100;      // Width (in tiles) we can see of the world at any moment
+	public static final int VIEW_HEIGHT = 100;     // Height (in tiles) we can see of the world at any moment
+	
+	public static final int TILE_WIDTH = 32;       // Width (In pixels) of tile
+	public static final int TILE_HEIGHT = 32;      // Height (in pixels) of tile
 	
 	@Override
 	public void create () {

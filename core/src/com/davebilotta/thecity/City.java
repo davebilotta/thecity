@@ -7,7 +7,7 @@ import com.davebilotta.thecity.Person.Gender;
 
 public class City {
 
-	private ArrayList<Person> citizens;
+	ArrayList<Person> citizens;
 	TheCity game;
 	
 	public City(TheCity game) {
@@ -140,13 +140,41 @@ public class City {
 	
 	public void ageCitizens(float delta) {
 		Iterator<Person> i = citizens.iterator();
-		
+		ArrayList<Person> removedCitizens = new ArrayList<Person>();
 		Person p;
+		boolean death = false;
 		
 		while (i.hasNext()) {
 			p = i.next();
 			p.increaseAge(delta);
+			
+			if (p.getAge() > 50) {
+				// Only let people die at random for now (testing)
+				if (this.game.eventManager.randomBoolean() == true) { 
+					death = true;
+					p.die();
+					removedCitizens.add(p);
+				}
+				else {
+					Utils.log("false value");
+				}
+			}
+			
 		}
+		if (death) removeCitizens(removedCitizens);
+	}
+	
+	public void removeCitizens(ArrayList<Person> temp) {
+		// 
+		Iterator<Person> i = citizens.iterator();
+		ArrayList<Person> tempCitizens = new ArrayList<Person>();
+		Person p;
+				
+		while (i.hasNext()) {
+			p = i.next();
+			if (!temp.contains(p)) tempCitizens.add(p);
+		}
+		citizens = tempCitizens;
 	}
 	
 	public void reportStatus() {
@@ -154,11 +182,12 @@ public class City {
 		int m = getCitizens(Gender.MALE).size();
 		int f = getCitizens(Gender.FEMALE).size();
 		
-		Utils.log("        Number males: " + m + " (" + (double)(((double)m/(m+f))*100) + "%)");
-		Utils.log("      Number females: " + f + " (" + (double)(((double)f/(m+f))*100) + "%)");
-		Utils.log("Average intelligence: " + averageIntelligence());
-		Utils.log("    Average strength: " + averageStrength());
-		Utils.log("      Average wealth: " + averageWealth());
+		Utils.log("        Number males: " + m + " (" + MathUtils.round((double)(((double)m/(m+f))*100)) + "%)");
+		Utils.log("      Number females: " + f + " (" + MathUtils.round((double)(((double)f/(m+f))*100)) + "%)");
+		
+		Utils.log("Average intelligence: " + MathUtils.round(averageIntelligence()));
+		Utils.log("    Average strength: " + MathUtils.round(averageStrength()));
+		Utils.log("      Average wealth: " + MathUtils.round(averageWealth()));
 		
 		float[] stats = ageStats();
 		

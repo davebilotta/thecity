@@ -1,12 +1,15 @@
 package com.davebilotta.thecity;
 
-import java.util.Random;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 
 public class Person {
 
 	TheCity game;
 	
 	private int id;
+	private boolean alive;
+	
 	// Character traits
 	private int strength;          // 0 - 100
 	private int intelligence;      // 0 - 100	
@@ -14,9 +17,15 @@ public class Person {
 	private int thirst;            // 0 - 100
 	private int money;             // unlimited
 	private Person spouse;
+	boolean fertile;
+	
+	private static final float FERTILITY_BEGIN = 5f;
+	private static final float FERTILITY_END = 20f;
 	
 	private Gender gender;
 	private float ageSeconds;
+	
+	Vector2 position;
 	
 	public enum Gender {
 		MALE,FEMALE
@@ -40,8 +49,11 @@ public class Person {
 		this.thirst = 0;
 		this.money = 0;
 		this.ageSeconds = 0;
+		this.fertile = false;
+		
+		this.position = new Vector2((float) manager.randomInt(Gdx.graphics.getWidth()),(float) manager.randomInt(Gdx.graphics.getHeight()));
 
-		Utils.log("Creating " + this.gender + " with intelligence: " + this.intelligence + ", strength: " + this.strength);
+		Utils.log("Creating " + this.gender + " with intelligence: " + this.intelligence + ", strength: " + this.strength + " starting at " + position.x + "," + position.y);
 	}
 	
 	// Getters
@@ -81,8 +93,33 @@ public class Person {
 		return ageSeconds;
 	}
 	
+	public boolean isMarried() {
+		if (this.spouse == null) return false;
+		else return true;
+	}
+	
+	public boolean isAlive() {
+		return this.alive;
+	}
+	
+	public void die() {
+		Utils.log("Person " + this.id + " has died.");
+		this.alive = false;
+	}
+	
 	public void increaseAge(float delta) {
 		this.ageSeconds+=delta;
+		
+		if (this.gender == Gender.FEMALE) {
+			if (ageSeconds > FERTILITY_END) {
+				//Utils.log(this.id + " is no longer fertile");
+				this.fertile = false;
+			}
+			else if (ageSeconds > FERTILITY_BEGIN) {
+				//Utils.log(this.id + " is now fertile");
+				this.fertile = true;
+			}
+		}
 	}
 	
 }
