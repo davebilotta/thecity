@@ -11,6 +11,7 @@ public class TheCity extends Game {
 	public static final boolean DEBUG_MODE = true;
 	EventManager eventManager;
 	City city;
+	Level level;
 	GameScreen screen;
 	
 	// Used for timing/generating events
@@ -34,6 +35,7 @@ public class TheCity extends Game {
 		
 		this.eventManager = new EventManager(this);
 		this.city = new City(this);
+		this.level = new Level(this);
 		this.screen = new GameScreen(this);
 		this.setScreen(screen);
 		

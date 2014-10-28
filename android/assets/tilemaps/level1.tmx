@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="250" height="250" tilewidth="64" tileheight="64">
+ <tileset firstgid="1" name="grass" tilewidth="64" tileheight="64">
+  <image source="../tiles/rpgTile019.png" width="64" height="64"/>
+  <terraintypes>
+   <terrain name="New Terrain" tile="-1"/>
+  </terraintypes>
+  <tile id="0" terrain=",0,0,0">
+   <properties>
+    <property name="name" value="road"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="2" name="water" tilewidth="64" tileheight="64">
+  <image source="../tiles/rpgTile029.png" width="64" height="64"/>
+  <tile id="0">
+   <properties>
+    <property name="name" value="road"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="3" name="road" tilewidth="64" tileheight="64">
+  <properties>
+   <property name="name" value="road"/>
+  </properties>
+  <image source="../tiles/rpgTile024.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="4" name="Tiles" tilewidth="64" tileheight="64">
+  <image source="../Spritesheet/RPGpack_sheet_2X.png" width="2560" height="1664"/>
+ </tileset>
+ <layer name="Tile Layer 2" width="250" height="250">
+  <data encoding="base64" compression="zlib">
+   eJzt2k1uGkEQBtAmp8iPcg6uU8tscpdscoZcK0qUe2QkNgFBgJkeulz9Fk/Ykun62tKnMuBDa+0ATOOYIAOwLz2H+vQc6tNzqE/PIZ/jA549b/SdgHP3evls3/Uc8undXz2HfPQc6tNzqO+RXnp9Dm/brV56vx3qOF58vabbt84DctjyWfmt80bfCTjXu5d6DvnoOdTX6+/1f88bfSfgXM/X5oeO5wB9HS8ee5wF5HLts7UeZwF5XHZzS9f1HHK61s21XddzyKnn/77qOeTkczWor3fP1xr9ewAAAAAAAAAAAAAAAAAAGOVHggzAa+g7AAAAAAAAAAAAAADXvF98WHxcfOr8+DnB/YDWvi3e7eR7gvsBrX1p+/X8a4L7AfY5zMA+h/rsc6jPPof67HOozz6H+uxzqM8+h/rsc6jPPof67HNmFk8YnXUL+5zZRFvX3bXPy8A+ZxbRtnc07hh9x1vsc2YQrV/H732/dc4efi5+L37t8Pgnwf0g2n7du3X2XvOA62LA+fGCucBJtNf0/NqMvecCJzH5fJhBTD4fZhAJ5o/OANWFDFBeyADlRZIMGXJAVZEgQ6YcUFEkyJApB1QUCTJkygEVRYIMmXJARZEgQ6YcUFEkyJApB1QUCTJkygEVRYIMmXJARZEgQ6YcUFEkyJApB1QUCTJkygEVRYIMmXJAVSEDlBcyQHnRxvZs5GyYSUw6G2YSbVzfRs2FGcVkc2FWMclMmF0UnwecRLE5wHVRZAbwf/HGzwceE22fPu51LrBOtP6d7H0e0Ee0Pv3scQawn2jb+r7lucBrRXu8s8/8LJBTPGB0RgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoJa/GuxnPg==
+  </data>
+ </layer>
+</map>
