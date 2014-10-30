@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.davebilotta.thecity.Person.Gender;
+import com.badlogic.gdx.math.MathUtils;
 
 public class GameScreen implements Screen, InputProcessor {
 
@@ -27,38 +28,52 @@ public class GameScreen implements Screen, InputProcessor {
 	TiledMapRenderer tiledMapRenderer;
 
 	int tileSize, mapWidth, mapHeight;
-	int xpos, ypos;
+	int tileX, tileY;
+	int renderWidth, renderHeight; // # of tiles in either direction
+	
+	float screenWidth,screenHeight;
 
 	public GameScreen(TheCity game) {
 		this.game = game;
 		this.batch = new SpriteBatch();
 
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, w, h);
-		camera.update();
-
-		tiledMap = new TmxMapLoader().load("tilemaps/level1.tmx");
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		Gdx.input.setInputProcessor(this);
-
 		// TODO: Eventually move to assets class
-
 		red_dot = new Texture("red_dot.png");
 		orange_dot = new Texture("orange_dot.png");
 		yellow_dot = new Texture("yellow_dot.png");
 		green_dot = new Texture("green_dot.png");
 		blue_dot = new Texture("blue_dot.png");
 		white_dot = new Texture("white_dot.png");
+		
+		screenWidth = Gdx.graphics.getWidth();
+		screenHeight = Gdx.graphics.getHeight();
+		
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, screenWidth,screenHeight);
 
+		boolean largeMap = false;
+		if (largeMap) { 
+			tiledMap = new TmxMapLoader().load("tilemaps/level1.tmx");
+			mapWidth = mapHeight = 250;
+		} 
+		else {
+			tiledMap = new TmxMapLoader().load("tilemaps/level3.tmx");
+			mapWidth = mapHeight = 20;
+		}
+		
+		renderWidth = 16;      // 1024px
+		renderHeight = 12;     // 768px
 		tileSize = 64;
-		// map is 15 x 15;
-		mapWidth = mapHeight = 250;
-		xpos = 7;
-		ypos = 7;
-
+		
+		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+		Gdx.input.setInputProcessor(this);
+	
+		tileX = (mapWidth - renderWidth) * tileSize;
+		tileY = (mapHeight - renderHeight) * tileSize;
+				
+        camera.position.x = tileX + (tileSize * renderWidth) / 2;
+        camera.position.y = tileY + (tileSize * renderHeight) / 2;
+        camera.update();
 	}
 
 	@Override
@@ -68,16 +83,11 @@ public class GameScreen implements Screen, InputProcessor {
 		Gdx.gl20.glClearColor(0, 0, 0, 1f);
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT); // clear the buffer
-
-		// Now do rendering here
-
-		camera.position.set(xpos * (tileSize + 1), (ypos * tileSize)/2, 0);
-
+	
 		camera.update();
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 
-		// renderMenu();
 		renderCitizens(delta);
 
 	}
@@ -105,113 +115,87 @@ public class GameScreen implements Screen, InputProcessor {
 		}
 
 		batch.end();
-
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		Utils.log("gamescreen-RESIZE");
-	}
-
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		Utils.log("gamescreen-SHOW");
-
-	}
-
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		Utils.log("gamescreen-HIDE");
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		Utils.log("gamescreen-PAUSE");
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		Utils.log("gamescreen-RESUME");
-	}
-
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		Utils.log("gamescreen-DISPOSE");
+		screenWidth = Gdx.graphics.getWidth();
+		screenHeight = Gdx.graphics.getHeight();
+		
+		camera.viewportWidth = width;
+		camera.viewportHeight = height;
+		
 	}
 
 	// InputProcessor methods
+	
 	@Override
-	public boolean keyDown(int keycode) {
-		
-		switch (keycode) {
-		case Input.Keys.LEFT:
-			if (xpos > 0) {
-				xpos--;
-				camera.translate(-tileSize, 0);}
-			break;
-			
-		case Input.Keys.RIGHT:
-			if (xpos < mapWidth) {
-				xpos++;
-				camera.translate(tileSize, 0);
-			}
-			break;
+		public boolean keyDown(int keycode) {
 
-		case Input.Keys.DOWN:
-			if (ypos > 0) {
-				ypos--;
-				camera.translate(0, -tileSize);}
-			break;
+			switch (keycode) {
+			case Input.Keys.LEFT:
+				if (tileX > 0) {
+				tileX-=tileSize;
+				}
+				break;
 
-		case Input.Keys.UP:
-			if (ypos < mapHeight) {
-				ypos++;
-				camera.translate(0, tileSize);
-			}
-			break;
+			case Input.Keys.RIGHT:
+				if (tileX < ((mapWidth - renderWidth) * tileSize )) {
+				tileX+=tileSize;
+				}
+				break;
+
+			case Input.Keys.DOWN:
+				if (tileY > 0) { 
+					tileY-=tileSize;
+				}
+				break;
+
+			case Input.Keys.UP:
+				if (tileY < ((mapHeight - renderHeight) * tileSize )) {
+					tileY+=tileSize;
+				}
+				break;
+
 		}
 
-		return false;
-	}
+			float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
+	        float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
+
+	        camera.position.x = tileX + (tileSize * renderWidth) / 2;
+	        camera.position.y = tileY + (tileSize * renderHeight) / 2;
+	        
+			return false;
+		}
 
 	@Override
 	public boolean keyUp(int keycode) {
+		
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -221,4 +205,27 @@ public class GameScreen implements Screen, InputProcessor {
 		return false;
 	}
 
+	@Override
+	public void show() {
+	}
+
+	@Override
+	public void hide() {
+	}
+
+	@Override
+	public void pause() {
+	}
+
+	@Override
+	public void resume() {
+	}
+
+	@Override
+	public void dispose() {
+		batch.dispose();
+		
+		// TODO: Dispose of assets
+		// Assets.dispose();
+	}
 }
