@@ -48,8 +48,8 @@ public class TheCity extends Game {
 		
 		if (this.delta > EVENT_THRESHOLD) {
 			this.delta = 0;
-			this.eventManager.newEvent();
-			this.city.reportStatus();
+			//this.eventManager.newEvent();
+			//this.city.reportStatus();
 		}
 	}
 }

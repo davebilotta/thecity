@@ -3,6 +3,7 @@ package com.davebilotta.thecity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.badlogic.gdx.math.Vector2;
 import com.davebilotta.thecity.Person.Gender;
 
 public class City {
@@ -15,29 +16,27 @@ public class City {
 		
 		this.citizens = new ArrayList<Person>();
 		
-		for (int i = 0; i < 5; i ++) {
-			addCitizen(i,game);
-		}
+		//for (int i = 0; i < 5; i ++) {
+		//	addCitizen(i,game);
+		//}
 		
-		this.reportStatus();
+		//this.reportStatus();
 	}
 	
-	public void addCitizen(int i,TheCity game) {
-		citizens.add(new Person(i,game));
+	
+	public void addCitizen(int i,TheCity game,Vector2 position) {
+		citizens.add(new Person(i,game,position));
 	}
 	
-	public void addCitizen(TheCity game) {
-		citizens.add(new Person(citizens.size()+1,game));
-	}
 	
-	public void addCitizens(TheCity game,int size) {
+	/*public void addCitizens(TheCity game,int size) {
 		for (int i = 0; i < size; i ++) {
 			citizens.add(new Person(citizens.size()+1,game));
 		}
-	}
+	}*/
 
 	
-	private int numCitizens() {
+	public int numCitizens() {
 		return this.citizens.size();
 	}
 	
@@ -148,7 +147,8 @@ public class City {
 			p = i.next();
 			p.increaseAge(delta);
 			
-			if (p.getAge() > 50) {
+			/* Don't let people die for now
+			 * if (p.getAge() > 50) {
 				// Only let people die at random for now (testing)
 				if (this.game.eventManager.randomBoolean() == true) { 
 					death = true;
@@ -158,10 +158,10 @@ public class City {
 				else {
 					Utils.log("false value");
 				}
-			}
+			} */
 			
 		}
-		if (death) removeCitizens(removedCitizens);
+		//if (death) removeCitizens(removedCitizens);
 	}
 	
 	public void removeCitizens(ArrayList<Person> temp) {

@@ -33,8 +33,5 @@ public class EventManager {
 		// This adds a single one
 		//this.game.city.addCitizen(game);
 		
-		// This adds a group
-		this.game.city.addCitizens(game,5);
-		
 	}
 }

@@ -3,7 +3,7 @@ package com.davebilotta.thecity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
-public class Person {
+public class Person extends GameObject {
 
 	TheCity game;
 	
@@ -25,13 +25,15 @@ public class Person {
 	private Gender gender;
 	private float ageSeconds;
 	
-	Vector2 position;
+	//Vector2 position;
+	
+	int worldX, worldY;
 	
 	public enum Gender {
 		MALE,FEMALE
 	}
 	
-	public Person(int id, TheCity game) {
+	/*public Person(int id, TheCity game) {
 		this.game = game;
 		this.id = id;
 		// Randomly assigned - should some of these be based on parent?
@@ -55,7 +57,35 @@ public class Person {
 
 		Utils.log("Creating " + this.gender + " with intelligence: " + this.intelligence + ", strength: " + this.strength + " starting at " + position.x + "," + position.y);
 	}
+	*/
 	
+	public Person(int id, TheCity game, Vector2 position) {
+		// position = world position = translate this when rendering
+		super(position);
+		
+		this.game = game;
+		this.id = id;
+		// Randomly assigned - should some of these be based on parent?
+		// ie, more intelligent people more likely to have intelligent children?
+		EventManager manager = this.game.eventManager;
+		
+		this.strength = manager.randomInt(20,100);
+		this.intelligence = manager.randomInt(50,100);
+		
+		boolean g = manager.randomBoolean();
+		if (g == true) this.gender = Gender.MALE;
+		else this.gender = Gender.FEMALE;
+		
+		this.hunger = 0;
+		this.thirst = 0;
+		this.money = 0;
+		this.ageSeconds = 0;
+		this.fertile = false;
+		
+	//this.position = position;
+
+		Utils.log("Creating " + this.gender + " with intelligence: " + this.intelligence + ", strength: " + this.strength + " starting at " + position.x + "," + position.y);
+	}
 	// Getters
 	public int getId() {
 		return id;
