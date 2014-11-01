@@ -10,31 +10,24 @@ public class City {
 
 	ArrayList<Person> citizens;
 	TheCity game;
+	private float ageSeconds;
+	private int ageMonths;
+	private int ageYears;
 	
 	public City(TheCity game) {
 		this.game = game;
 		
+		this.ageSeconds = 0;
+		this.ageMonths = 0;
+		this.ageYears = 0;
+		
 		this.citizens = new ArrayList<Person>();
 		
-		//for (int i = 0; i < 5; i ++) {
-		//	addCitizen(i,game);
-		//}
-		
-		//this.reportStatus();
 	}
-	
-	
+		
 	public void addCitizen(int i,TheCity game,Vector2 position) {
 		citizens.add(new Person(i,game,position));
 	}
-	
-	
-	/*public void addCitizens(TheCity game,int size) {
-		for (int i = 0; i < size; i ++) {
-			citizens.add(new Person(citizens.size()+1,game));
-		}
-	}*/
-
 	
 	public int numCitizens() {
 		return this.citizens.size();
@@ -137,32 +130,33 @@ public class City {
 		return l;
 	}
 	
-	public void ageCitizens(float delta) {
-		Iterator<Person> i = citizens.iterator();
-		ArrayList<Person> removedCitizens = new ArrayList<Person>();
-		Person p;
-		boolean death = false;
-		
-		while (i.hasNext()) {
-			p = i.next();
-			p.increaseAge(delta);
-			
-			/* Don't let people die for now
-			 * if (p.getAge() > 50) {
-				// Only let people die at random for now (testing)
-				if (this.game.eventManager.randomBoolean() == true) { 
-					death = true;
-					p.die();
-					removedCitizens.add(p);
-				}
-				else {
-					Utils.log("false value");
-				}
-			} */
-			
-		}
-		//if (death) removeCitizens(removedCitizens);
+	public void age (float delta) {
+		// Ages city, citizens
+		ageCity(delta);
 	}
+	
+	private void ageCity(float delta) {
+		// Age city
+		// if we've hit the number of real life seconds for one game month, 
+		// increase the city age by 1 month (and possibly 1 year)
+	
+		this.ageSeconds+=delta;
+		
+		if (this.ageSeconds >= this.game.gameMonthSeconds) { 
+			this.ageSeconds = 0;
+			this.ageMonths++;
+			
+			if (this.ageMonths > 11) {
+				this.ageYears++;
+				this.ageMonths = 0;
+			}
+			
+			this.reportStatus();
+		}
+		
+	}
+
+	
 	
 	public void removeCitizens(ArrayList<Person> temp) {
 		// 
@@ -192,5 +186,7 @@ public class City {
 		float[] stats = ageStats();
 		
 		Utils.log("Youngest: " + stats[0] + ", oldest: "+stats[1] + ", average: " + stats[2]);
+		
+		Utils.log("City is " + this.ageYears + " years, " + this.ageMonths + " months");
 	}
 }

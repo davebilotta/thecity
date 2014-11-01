@@ -90,6 +90,9 @@ public class GameScreen implements Screen, InputProcessor {
 		tiledMapRenderer.render();
 
 		renderCitizens(delta);
+		
+		
+		renderUIComponents();
 
 	}
 
@@ -116,9 +119,8 @@ public class GameScreen implements Screen, InputProcessor {
 						texture = red_dot;
 				}
 
-				// TODO: translate coordinates to world coordinates
-				//batch.draw(texture,p.getPosition().x, p.getPosition().y);
 				Vector2 screenPos = worldToScreen(p.getPosition());
+				// TODO: need to factor item's size when rendering
 				batch.draw(texture,screenPos.x,screenPos.y);
 			}
 		} // end while
@@ -142,14 +144,19 @@ public class GameScreen implements Screen, InputProcessor {
 	}
 	
 	public Vector2 worldToScreen(Vector2 position) {
-		return new Vector2(((position.x - worldX) - (itemSize/2)),
-				(( (position.y - worldY))) - (itemSize/2));
+		return new Vector2(((position.x - worldX)),
+				(( (position.y - worldY))) );
 	}
 	
 	public Vector2 screenToWorld(float screenX, float screenY) {
-		return new Vector2((screenX + worldX + (itemSize /2)),((screenHeight - screenY + worldY) + (itemSize / 2)));
+		return new Vector2((screenX + worldX ),((screenHeight - screenY + worldY)));
 	}
 
+	
+	public void renderUIComponents() {
+		// render city information
+	}
+	
 	@Override
 	public void resize(int width, int height) {
 		screenWidth = Gdx.graphics.getWidth();
