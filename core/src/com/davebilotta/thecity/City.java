@@ -154,9 +154,7 @@ public class City {
 			this.reportStatus();
 		}
 		
-	}
-
-	
+	}	
 	
 	public void removeCitizens(ArrayList<Person> temp) {
 		// 
@@ -188,5 +186,15 @@ public class City {
 		Utils.log("Youngest: " + stats[0] + ", oldest: "+stats[1] + ", average: " + stats[2]);
 		
 		Utils.log("City is " + this.ageYears + " years, " + this.ageMonths + " months");
+	}
+	
+	// Used to render population, age for UI
+	public CharSequence getPopulationText() {
+		return "Population: " + this.citizens.size();
+	}
+
+	public CharSequence getAgeText() {
+
+		return "Year: " + this.ageYears + " Month: " + this.ageMonths;
 	}
 }

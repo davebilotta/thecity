@@ -14,16 +14,22 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.davebilotta.thecity.Person.Gender;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.davebilotta.thecity.Person.Gender;
 
 public class GameScreen implements Screen, InputProcessor {
 
 	TheCity game;
+	
 	SpriteBatch batch;
-	Texture red_dot, orange_dot, yellow_dot, green_dot, blue_dot, white_dot;
 
+	private Stage stage;
 	OrthographicCamera camera;
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
@@ -33,25 +39,26 @@ public class GameScreen implements Screen, InputProcessor {
 	int renderWidth, renderHeight; // # of tiles in either direction
 
 	float screenWidth, screenHeight;
-
+	
+	// UI Components for header
+	Label populationText;
+	Label ageText;
+	
 	public GameScreen(TheCity game) {
 		this.game = game;
 		this.batch = new SpriteBatch();
 
-		// TODO: Eventually move to assets class
-		red_dot = new Texture("red_dot.png");
-		orange_dot = new Texture("orange_dot.png");
-		yellow_dot = new Texture("yellow_dot.png");
-		green_dot = new Texture("green_dot.png");
-		blue_dot = new Texture("blue_dot.png");
-		white_dot = new Texture("white_dot.png");
-
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
 
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, screenWidth, screenHeight);
-
+		renderWidth = 16; // 1024px / 64
+		renderHeight = 12; // 768px / 64
+		tileSize = 64;
+		itemSize = 32;
+		
+		camera = new OrthographicCamera(screenWidth,screenHeight);
+		stage = new Stage(new ScreenViewport());
+		
 		boolean largeMap = false;
 		if (largeMap) {
 			tiledMap = new TmxMapLoader().load("tilemaps/level1.tmx");
@@ -60,13 +67,11 @@ public class GameScreen implements Screen, InputProcessor {
 			tiledMap = new TmxMapLoader().load("tilemaps/level3.tmx");
 			mapWidth = mapHeight = 20;
 		}
-
-		renderWidth = 16; // 1024px
-		renderHeight = 12; // 768px
-		tileSize = 64;
-		itemSize = 32;
-
+		
+		createUI();
+		
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+				
 		Gdx.input.setInputProcessor(this);
 
 		worldX = (mapWidth - renderWidth) * tileSize;
@@ -74,25 +79,31 @@ public class GameScreen implements Screen, InputProcessor {
 
 		camera.position.x = worldX + (tileSize * renderWidth) / 2;
 		camera.position.y = worldY + (tileSize * renderHeight) / 2;
+		
 		camera.update();
 	}
 
 	@Override
 	public void render(float delta) {
 		game.update(delta);
-
+		stage.act();
+		
 		Gdx.gl20.glClearColor(0, 0, 0, 1f);
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT); // clear the buffer
-
+	
 		camera.update();
 		tiledMapRenderer.setView(camera);
+		
+		//tiledMapRenderer.setView(camera.combined,0,0,screenWidth,screenHeight);
+		
 		tiledMapRenderer.render();
 
 		renderCitizens(delta);
-		
-		
 		renderUIComponents();
+		
+		stage.draw();
+		
 
 	}
 
@@ -111,12 +122,12 @@ public class GameScreen implements Screen, InputProcessor {
 			// figure out if in view
 			if (inView(p)) {
 				if (p.getGender() == Gender.MALE)
-					texture = blue_dot;
+					texture = Assets.blue_dot;
 				else {
 					if (p.fertile)
-						texture = green_dot;
+						texture = Assets.green_dot;
 					else
-						texture = red_dot;
+						texture = Assets.red_dot;
 				}
 
 				Vector2 screenPos = worldToScreen(p.getPosition());
@@ -132,7 +143,6 @@ public class GameScreen implements Screen, InputProcessor {
 		// position = position in world
 		Vector2 position = item.getPosition();
 
-		// right now this is only checking the x axis
 		if (((position.x + itemSize/2)>= worldX) && (position.x <= (screenWidth + worldX))
 		&& ((position.y + itemSize/2)>= worldY) && (position.y <= (screenHeight + worldY)) ) {
 			
@@ -152,18 +162,34 @@ public class GameScreen implements Screen, InputProcessor {
 		return new Vector2((screenX + worldX ),((screenHeight - screenY + worldY)));
 	}
 
+	public void createUI() {
+		populationText = new Label("Population: 0",Assets.menuLabelStyle);
+		populationText.setPosition(0,screenHeight - populationText.getHeight());
+		
+		ageText = new Label("0m0y",Assets.menuLabelStyle);
+		// TODO: Fix this position
+		ageText.setPosition(screenWidth - 250, screenHeight - ageText.getHeight());
+		
+		stage.addActor(populationText);
+		stage.addActor(ageText);
+	}
 	
 	public void renderUIComponents() {
 		// render city information
+				
+		populationText.setText(this.game.city.getPopulationText());
+		ageText.setText(this.game.city.getAgeText());
+		
+	
 	}
 	
 	@Override
 	public void resize(int width, int height) {
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
-
-		camera.viewportWidth = width;
-		camera.viewportHeight = height;
+ 
+		camera.viewportWidth = screenWidth;
+		camera.viewportHeight = screenHeight;
 
 	}
 
@@ -199,10 +225,10 @@ public class GameScreen implements Screen, InputProcessor {
 
 		}
 
-		float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
-		float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
+	//	float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
+	//	float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
 
-		camera.position.x = worldX + (tileSize * renderWidth) / 2;
+		camera.position.x = worldX + (tileSize * renderWidth) / 2 ;
 		camera.position.y = worldY + (tileSize * renderHeight) / 2;
 
 		return false;
@@ -253,6 +279,8 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
+		// -amount = up on scrollwheel, +amount = down
+		Utils.log("Scrolled " + amount);
 		return false;
 	}
 
@@ -275,8 +303,8 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void dispose() {
 		batch.dispose();
+		stage.dispose();
 
-		// TODO: Dispose of assets
-		// Assets.dispose();
+		Assets.dispose();
 	}
 }

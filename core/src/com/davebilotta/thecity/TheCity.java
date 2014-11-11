@@ -37,16 +37,16 @@ public class TheCity extends Game {
 
 	@Override
 	public void create() {
-		// batch = new SpriteBatch();
-		// img = new Texture("badlogic.jpg");
+	
+		Assets.load();
 
 		this.eventManager = new EventManager(this);
 		this.city = new City(this);
 		this.level = new Level(this);
 		this.screen = new GameScreen(this);
 		this.setScreen(screen);
-		// TODO: Start this at the starting speed
-		this.setSpeed(55);
+		// TODO: Start this at the starting speed based on preferences
+		this.setSpeed(5);
 
 	}
 
