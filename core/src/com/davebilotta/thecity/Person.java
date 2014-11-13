@@ -1,6 +1,5 @@
 package com.davebilotta.thecity;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class Person extends GameObject {
@@ -16,6 +15,7 @@ public class Person extends GameObject {
 	private int hunger; // 0 - 100
 	private int thirst; // 0 - 100
 	private int speed;  // 50 - 100
+	private int health;
 	private int money; // unlimited
 	private Person spouse;
 	boolean fertile;
@@ -30,7 +30,7 @@ public class Person extends GameObject {
 	private int ageMonths, ageYears;
 
 	int worldX, worldY;
-
+	
 	public enum Gender {
 		MALE, FEMALE
 	}
@@ -52,6 +52,8 @@ public class Person extends GameObject {
 		this.strength = manager.randomInt(20, 100);
 		this.intelligence = manager.randomInt(50, 100);
 		this.speed = manager.randomInt(50, 100);
+		// TODO: Not everyone is born healthy - how to handle this? 
+		this.health = 100;
 
 		boolean g = manager.randomBoolean();
 		if (g == true)

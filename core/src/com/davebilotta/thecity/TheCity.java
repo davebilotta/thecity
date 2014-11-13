@@ -34,7 +34,7 @@ public class TheCity extends Game {
 												// the world at any moment
 	public static final int VIEW_HEIGHT = 100; // Height (in tiles) we can see
 												// of the world at any moment
-
+	
 	@Override
 	public void create() {
 	
@@ -45,6 +45,7 @@ public class TheCity extends Game {
 		this.level = new Level(this);
 		this.screen = new GameScreen(this);
 		this.setScreen(screen);
+		
 		// TODO: Start this at the starting speed based on preferences
 		this.setSpeed(5);
 

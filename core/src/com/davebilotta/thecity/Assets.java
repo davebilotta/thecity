@@ -42,6 +42,7 @@ public class Assets {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void loadFonts() {
 
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(

@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -43,6 +44,8 @@ public class GameScreen implements Screen, InputProcessor {
 	// UI Components for header
 	Label populationText;
 	Label ageText;
+	
+	private GameObject selectedObject;
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -108,12 +111,12 @@ public class GameScreen implements Screen, InputProcessor {
 	}
 
 	public void renderCitizens(float delta) {
-		Iterator<Person> i = this.game.city.citizens.iterator();
 		Person p;
 		Texture texture;
 
 		batch.begin();
 
+		Iterator<Person> i = this.game.city.citizens.iterator();
 		// TODO: Only render those whose tileX and tileY are within the viewing
 		// window
 		while (i.hasNext()) {
@@ -256,9 +259,47 @@ public class GameScreen implements Screen, InputProcessor {
 
 		Vector2 position = screenToWorld(screenX,screenY);
 
-		this.game.city.addCitizen(this.game.city.numCitizens() + 1, this.game,
-				position);
+		// check for collisions
+		
+		if (gameObjectTouched(position)) {
+			// Which one was touched?
+		}
+		else {
+			// For now, just create a new person
+			this.game.city.addCitizen(this.game.city.numCitizens() + 1, this.game, position);
+
+		}
+		
 		return false;
+	}
+	
+	public boolean gameObjectTouched(Vector2 position) {
+		boolean touched = false;
+		
+		// Check people
+		Iterator<Person> i = this.game.city.citizens.iterator();
+		Person p;
+		// how big should touch size be?
+		Rectangle touchRect = new Rectangle(position.x,position.y,itemSize,itemSize);
+		
+		while (i.hasNext() && !touched) {
+			p = i.next();
+			
+			if (inView(p)) {
+				Rectangle checkRect = new Rectangle(p.getPosition().x,p.getPosition().y,itemSize,itemSize);
+				
+				if (touchRect.overlaps(checkRect)) {
+					selectedObject = p;
+					touched = true;
+					
+					Utils.log("Touched" + p.getId());
+				}
+			}
+
+		}
+		
+		// TODO: Check buildings, tourists, etc.
+		return touched;
 	}
 	
 	@Override
