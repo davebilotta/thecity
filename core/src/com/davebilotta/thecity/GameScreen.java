@@ -45,7 +45,8 @@ public class GameScreen implements Screen, InputProcessor {
 	Label populationText;
 	Label ageText;
 	
-	private GameObject selectedObject;
+	private GameObject currentObject;
+	private boolean objectSelected;
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -124,6 +125,11 @@ public class GameScreen implements Screen, InputProcessor {
 
 			// figure out if in view
 			if (inView(p)) {
+				
+			if (p.isSelected()) {
+				texture = Assets.white_dot;
+							}
+			else {
 				if (p.getGender() == Gender.MALE)
 					texture = Assets.blue_dot;
 				else {
@@ -132,14 +138,35 @@ public class GameScreen implements Screen, InputProcessor {
 					else
 						texture = Assets.red_dot;
 				}
+			}
 
 				Vector2 screenPos = worldToScreen(p.getPosition());
 				// TODO: need to factor item's size when rendering
 				batch.draw(texture,screenPos.x,screenPos.y);
+				
+				if (p.isSelected()) {
+					renderHealthBar(p,screenPos);
+				}
+				
 			}
 		} // end while
 
 		batch.end();
+	}
+	
+	public void renderHealthBar (GameObject p, Vector2 pos) {
+		// display at
+		int healthSize = 4;
+		int health = p.getHealth();
+		// render max of 8
+		//int h = Math.floor((double) (((health/100) * itemSize) / healthSize));
+		int h = (int) ((double) (health/100.0f) * itemSize) / healthSize;
+		
+		//Utils.log("drawing " + h + " bars");
+		
+		for (int i = 0; i < h; i++) {
+		batch.draw(Assets.health,(pos.x + (healthSize * i)),pos.y + itemSize + 5);
+		}
 	}
 
 	public boolean inView(GameObject item) {
@@ -175,6 +202,9 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		stage.addActor(populationText);
 		stage.addActor(ageText);
+		
+
+		
 	}
 	
 	public void renderUIComponents() {
@@ -254,9 +284,6 @@ public class GameScreen implements Screen, InputProcessor {
 		Utils.log("worldX: " + worldX);
 		Utils.log("worldY: " + worldY);
 
-		Utils.log("Corresponds to world coordinates of " + (screenX + worldX)
-				+ ", " + (screenY + worldY));
-
 		Vector2 position = screenToWorld(screenX,screenY);
 
 		// check for collisions
@@ -288,11 +315,26 @@ public class GameScreen implements Screen, InputProcessor {
 			if (inView(p)) {
 				Rectangle checkRect = new Rectangle(p.getPosition().x,p.getPosition().y,itemSize,itemSize);
 				
-				if (touchRect.overlaps(checkRect)) {
-					selectedObject = p;
-					touched = true;
+					if (touchRect.overlaps(checkRect)) {
+					// Unselect current object, if any 
+					if (objectSelected) {
+						
+						// Just for testing - remove later
+						if (currentObject == p) {
+							p.hit(this.game.eventManager.randomInt(1, 15));
+						}
+						
+						currentObject.toggleSelected();
+					}
+					
+					objectSelected = true;					
+					currentObject = p;
+					
+					p.toggleSelected();
 					
 					Utils.log("Touched" + p.getId());
+					
+					touched = true;
 				}
 			}
 

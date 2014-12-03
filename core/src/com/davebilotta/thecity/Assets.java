@@ -16,7 +16,7 @@ public class Assets {
 	public static ArrayList<Texture> textures;
 
 	public static Texture grass, water, road, red_dot, orange_dot, yellow_dot,
-			green_dot, blue_dot, white_dot;
+			green_dot, blue_dot, white_dot,health;
 
 	public static LabelStyle menuLabelStyle;
 	public static BitmapFont menuFont;
@@ -39,6 +39,8 @@ public class Assets {
 		grass = createTexture("tiles/rpgTile019.png");
 		water = createTexture("tiles/rpgTile029.png");
 		road = createTexture("tiles/rpgTile024.png");
+		
+		health = createTexture("health.png");
 
 	}
 

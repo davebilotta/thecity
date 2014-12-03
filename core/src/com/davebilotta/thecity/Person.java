@@ -4,10 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Person extends GameObject {
 
-	TheCity game;
 
-	private int id;
-	private boolean alive;
 
 	// Character traits
 	private int strength; // 20 - 100
@@ -15,7 +12,7 @@ public class Person extends GameObject {
 	private int hunger; // 0 - 100
 	private int thirst; // 0 - 100
 	private int speed;  // 50 - 100
-	private int health;
+	
 	private int money; // unlimited
 	private Person spouse;
 	boolean fertile;
@@ -41,19 +38,18 @@ public class Person extends GameObject {
 
 	public Person(int id, TheCity game, Vector2 position) {
 		// position = world position => translate this when rendering
-		super(position);
+		super(id,game,position);
 
-		this.game = game;
-		this.id = id;
+	
 		// Randomly assigned - should some of these be based on parent?
 		// ie, more intelligent people more likely to have intelligent children?
-		EventManager manager = this.game.eventManager;
+		EventManager manager = game.eventManager;
 
 		this.strength = manager.randomInt(20, 100);
 		this.intelligence = manager.randomInt(50, 100);
 		this.speed = manager.randomInt(50, 100);
 		// TODO: Not everyone is born healthy - how to handle this? 
-		this.health = 100;
+		this.setHealth(100);
 
 		boolean g = manager.randomBoolean();
 		if (g == true)
@@ -79,9 +75,7 @@ public class Person extends GameObject {
 	}
 
 	// Getters
-	public int getId() {
-		return id;
-	}
+
 
 	public int getStrength() {
 		return strength;
@@ -122,14 +116,7 @@ public class Person extends GameObject {
 			return true;
 	}
 
-	public boolean isAlive() {
-		return this.alive;
-	}
 
-	public void die() {
-		Utils.log("Person " + this.id + " has died.");
-		this.alive = false;
-	}
 
 	public void doActivity(float delta) {
 		// This just continues the persons previous activity

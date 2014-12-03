@@ -9,6 +9,7 @@ import com.davebilotta.thecity.Person.Gender;
 public class City {
 
 	ArrayList<Person> citizens;
+	//
 	TheCity game;
 	private float ageSeconds;
 	private int ageMonths;
@@ -168,6 +169,22 @@ public class City {
 		}
 		citizens = tempCitizens;
 	}
+	
+	// TODO: Make this more generic - like removeGameObject?
+	public void removeCitizen(Person person) {
+		// 
+		Iterator<Person> i = citizens.iterator();
+		ArrayList<Person> tempCitizens = new ArrayList<Person>();
+		Person p;
+				
+		while (i.hasNext()) {
+			p = i.next();
+			if (p != person) tempCitizens.add(p);
+		}
+		citizens = tempCitizens;
+	}
+	
+	
 	
 	public void reportStatus() {
 		Utils.log("***** Total population: " + citizens.size() + " citizens *****");
