@@ -280,14 +280,17 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		Utils.log("touchDown at " + screenX + ", " + screenY);
-		Utils.log("worldX: " + worldX);
-		Utils.log("worldY: " + worldY);
-
+	
 		Vector2 position = screenToWorld(screenX,screenY);
 
-		// check for collisions
+		if (button == 0) leftClick(position);
+		if (button == 1) rightClick(position);
+		else middleClick(position);
 		
+		return false;
+	}
+	
+	public void leftClick(Vector2 position) {
 		if (gameObjectTouched(position)) {
 			// Which one was touched?
 		}
@@ -297,7 +300,14 @@ public class GameScreen implements Screen, InputProcessor {
 
 		}
 		
-		return false;
+	}
+	
+	public void rightClick(Vector2 position) {
+		
+	}
+	
+	public void middleClick(Vector2 position) {
+		
 	}
 	
 	public boolean gameObjectTouched(Vector2 position) {
