@@ -6,10 +6,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -32,6 +35,8 @@ public class GameScreen implements Screen, InputProcessor {
 
 	private Stage stage;
 	OrthographicCamera camera;
+	ShapeRenderer sr;
+	
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
 
@@ -47,6 +52,8 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	private GameObject currentObject;
 	private boolean objectSelected;
+	private boolean bottomBarVisible;
+	
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -62,6 +69,8 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		camera = new OrthographicCamera(screenWidth,screenHeight);
 		stage = new Stage(new ScreenViewport());
+		sr = new ShapeRenderer();
+		
 		
 		boolean largeMap = false;
 		if (largeMap) {
@@ -98,12 +107,12 @@ public class GameScreen implements Screen, InputProcessor {
 	
 		camera.update();
 		tiledMapRenderer.setView(camera);
-		
-		//tiledMapRenderer.setView(camera.combined,0,0,screenWidth,screenHeight);
-		
 		tiledMapRenderer.render();
-
+		
+		batch.begin();
 		renderCitizens(delta);
+		batch.end();
+		
 		renderUIComponents();
 		
 		stage.draw();
@@ -114,8 +123,6 @@ public class GameScreen implements Screen, InputProcessor {
 	public void renderCitizens(float delta) {
 		Person p;
 		Texture texture;
-
-		batch.begin();
 
 		Iterator<Person> i = this.game.city.citizens.iterator();
 		// TODO: Only render those whose tileX and tileY are within the viewing
@@ -151,7 +158,7 @@ public class GameScreen implements Screen, InputProcessor {
 			}
 		} // end while
 
-		batch.end();
+		
 	}
 	
 	public void renderHealthBar (GameObject p, Vector2 pos) {
@@ -209,11 +216,19 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	public void renderUIComponents() {
 		// render city information
-				
+		// Update population and age (top bar)
 		populationText.setText(this.game.city.getPopulationText());
 		ageText.setText(this.game.city.getAgeText());
 		
-	
+		if (bottomBarVisible) {
+			sr.begin(ShapeType.Filled);
+			sr.setColor(Color.OLIVE);
+		
+		// Render bottom bar - height = 2 tiles high (64px)
+		sr.rect(0, 0, screenWidth, (tileSize * 2));
+		sr.end();
+		}
+		
 	}
 	
 	@Override
@@ -226,8 +241,7 @@ public class GameScreen implements Screen, InputProcessor {
 
 	}
 
-	// InputProcessor methods
-
+	// InputProcessor methods - eventually move this to own class
 	@Override
 	public boolean keyDown(int keycode) {
 
@@ -328,28 +342,25 @@ public class GameScreen implements Screen, InputProcessor {
 					if (touchRect.overlaps(checkRect)) {
 					// Unselect current object, if any 
 					if (objectSelected) {
-						
-						// Just for testing - remove later
-						if (currentObject == p) {
-							p.hit(this.game.eventManager.randomInt(1, 15));
-						}
-						
 						currentObject.toggleSelected();
+						objectSelected = false;
+						touched = true;
 					}
 					
-					objectSelected = true;					
-					currentObject = p;
+					if (p!= currentObject) {
+						objectSelected = true;					
+						currentObject = p;
 					
-					p.toggleSelected();
-					
-					Utils.log("Touched" + p.getId());
-					
-					touched = true;
+						p.toggleSelected();
+						touched = true;
+					}
 				}
 			}
 
 		}
 		
+		
+		bottomBarVisible = objectSelected;
 		// TODO: Check buildings, tourists, etc.
 		return touched;
 	}
