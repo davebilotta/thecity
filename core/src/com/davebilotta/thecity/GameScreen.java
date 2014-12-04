@@ -53,7 +53,7 @@ public class GameScreen implements Screen, InputProcessor {
 	private GameObject currentObject;
 	private boolean objectSelected;
 	private boolean bottomBarVisible;
-	
+	private boolean touchDragged;
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -295,16 +295,15 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 	
-		Vector2 position = screenToWorld(screenX,screenY);
-
-		if (button == 0) leftClick(position);
-		if (button == 1) rightClick(position);
-		else middleClick(position);
+	
 		
 		return false;
 	}
 	
 	public void leftClick(Vector2 position) {
+		
+		//
+		//bottomBarVisible;
 		if (gameObjectTouched(position)) {
 			// Which one was touched?
 		}
@@ -367,16 +366,33 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		Vector2 position = screenToWorld(screenX,screenY);
+
+		if (touchDragged) {
+			
+		}
+		else {
+			if (button == 0) leftClick(position);
+			if (button == 1) rightClick(position);
+			else middleClick(position);
+		}
+		
+		touchDragged = false;
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		touchDragged = true;
+		
 		return false;
+		
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		//Utils.log("Mouse moved");
+		
 		return false;
 	}
 
