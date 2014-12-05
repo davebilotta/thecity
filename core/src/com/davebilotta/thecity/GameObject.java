@@ -52,6 +52,14 @@ public class GameObject {
 		else this.selected = true;
 	}
 	
+	public void select() {
+		this.selected = true;
+	}
+	
+	public void unselect() {
+		this.selected = false;
+	}
+	
 	public void setHealth(int health) {
 		this.health = health;
 	}

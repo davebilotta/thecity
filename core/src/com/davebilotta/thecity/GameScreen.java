@@ -1,5 +1,6 @@
 package com.davebilotta.thecity;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -51,9 +52,11 @@ public class GameScreen implements Screen, InputProcessor {
 	Label ageText;
 	
 	private GameObject currentObject;
-	private boolean objectSelected;
-	private boolean bottomBarVisible;
-	private boolean touchDragged;
+	private ArrayList<GameObject> currentObjects = new ArrayList<GameObject>();
+	private boolean objectSelected = false;
+	private boolean bottomBarVisible = false;
+	private boolean touchDragged = false;
+	private boolean controlKey = false;
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -70,7 +73,6 @@ public class GameScreen implements Screen, InputProcessor {
 		camera = new OrthographicCamera(screenWidth,screenHeight);
 		stage = new Stage(new ScreenViewport());
 		sr = new ShapeRenderer();
-		
 		
 		boolean largeMap = false;
 		if (largeMap) {
@@ -244,7 +246,7 @@ public class GameScreen implements Screen, InputProcessor {
 	// InputProcessor methods - eventually move this to own class
 	@Override
 	public boolean keyDown(int keycode) {
-
+		
 		switch (keycode) {
 		case Input.Keys.LEFT:
 			if (worldX > 0) {
@@ -269,6 +271,10 @@ public class GameScreen implements Screen, InputProcessor {
 				worldY += tileSize;
 			}
 			break;
+		case Input.Keys.CONTROL_LEFT:
+		case Input.Keys.CONTROL_RIGHT:
+			 controlKey = true;
+			 break;
 
 		}
 
@@ -278,17 +284,19 @@ public class GameScreen implements Screen, InputProcessor {
 		camera.position.x = worldX + (tileSize * renderWidth) / 2 ;
 		camera.position.y = worldY + (tileSize * renderHeight) / 2;
 
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
 
+		controlKey = false;
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
+		
 		return false;
 	}
 
@@ -324,45 +332,73 @@ public class GameScreen implements Screen, InputProcessor {
 	}
 	
 	public boolean gameObjectTouched(Vector2 position) {
-		boolean touched = false;
-		
+		boolean done = false;
+				
 		// Check people
 		Iterator<Person> i = this.game.city.citizens.iterator();
 		Person p;
 		// how big should touch size be?
 		Rectangle touchRect = new Rectangle(position.x,position.y,itemSize,itemSize);
 		
-		while (i.hasNext() && !touched) {
+		while (i.hasNext() && !done) {
 			p = i.next();
 			
 			if (inView(p)) {
 				Rectangle checkRect = new Rectangle(p.getPosition().x,p.getPosition().y,itemSize,itemSize);
 				
-					if (touchRect.overlaps(checkRect)) {
-					// Unselect current object, if any 
-					if (objectSelected) {
-						currentObject.toggleSelected();
-						objectSelected = false;
-						touched = true;
-					}
-					
-					if (p!= currentObject) {
-						objectSelected = true;					
-						currentObject = p;
-					
+				if (touchRect.overlaps(checkRect)) {
+					if (!controlKey) {
+						unselectAll(p);
 						p.toggleSelected();
-						touched = true;
+							
+						if (p.isSelected()) currentObjects.add(p);
+						else currentObjects.remove(p);
+						done = true;
 					}
-				}
+					else {
+						p.toggleSelected();
+						if (p.isSelected()) currentObjects.add(p);
+						else currentObjects.remove(p);							
+					}
+				} // end overlap check
 			}
 
 		}
 		
+		if (currentObjects.size() == 0) objectSelected = false;
+		else objectSelected = true;
+		
 		
 		bottomBarVisible = objectSelected;
 		// TODO: Check buildings, tourists, etc.
-		return touched;
+		if (done) return done;
+		else return objectSelected;
 	}
+	
+	// unselects all but o
+	public void unselectAll(GameObject p) {
+		Iterator<GameObject> iter = currentObjects.iterator();
+		while (iter.hasNext()) {
+			GameObject o = iter.next();
+			if (p != o) {
+				o.unselect();
+			}
+		}
+		// Clear everything, even P - it will be added later
+		currentObjects.clear();
+	}
+	
+	// unselects all
+	public void unselectAll() {
+		Iterator<GameObject> iter = currentObjects.iterator();
+		while (iter.hasNext()) {
+			GameObject o = iter.next();
+			o.unselect();
+		}
+		
+		currentObjects.clear();
+	}
+	
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
