@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -58,6 +59,8 @@ public class GameScreen implements Screen, InputProcessor {
 	private boolean touchDragged = false;
 	private boolean controlKey = false;
 	
+	private FPSLogger logger;
+	
 	public GameScreen(TheCity game) {
 		this.game = game;
 		this.batch = new SpriteBatch();
@@ -96,6 +99,8 @@ public class GameScreen implements Screen, InputProcessor {
 		camera.position.y = worldY + (tileSize * renderHeight) / 2;
 		
 		camera.update();
+		
+		logger = new FPSLogger();
 	}
 
 	@Override
@@ -119,6 +124,7 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		stage.draw();
 		
+		logger.log();
 
 	}
 
@@ -310,17 +316,40 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	public void leftClick(Vector2 position) {
 		
-		//
-		//bottomBarVisible;
 		if (gameObjectTouched(position)) {
 			// Which one was touched?
 		}
 		else {
-			// For now, just create a new person
-			this.game.city.addCitizen(this.game.city.numCitizens() + 1, this.game, position);
-
+			addMany(position);
+			// addSingle(position);
 		}
 		
+	}
+	
+	public void addSingle(Vector2 position) {
+		this.game.city.addCitizen(this.game.city.numCitizens() + 1, this.game, position);
+
+	}
+	
+	public void addMany(Vector2 position) {
+		int f = 50;
+		float x = position.x;
+		float y = position.y;
+		
+		// Create 100 for now at random places in relation to position
+		for (int i = 0; i < 100; i ++) {
+			boolean plus = this.game.eventManager.randomBoolean();
+			int a = this.game.eventManager.randomInt(0, f);
+			int b = this.game.eventManager.randomInt(0, f);
+			
+			Vector2 vector;
+			
+			if (plus)  vector = new Vector2(x + a, y + b); 
+			else vector = new Vector2(x - a, y - b);
+							
+			this.game.city.addCitizen(this.game.city.numCitizens() + 1, this.game, vector);
+		}
+
 	}
 	
 	public void rightClick(Vector2 position) {
