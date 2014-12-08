@@ -50,6 +50,7 @@ public class GameObject {
 	public void toggleSelected() {
 		if (this.selected) this.selected = false;
 		else this.selected = true;
+		
 	}
 	
 	public void select() {

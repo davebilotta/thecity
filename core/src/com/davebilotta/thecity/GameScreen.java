@@ -57,9 +57,13 @@ public class GameScreen implements Screen, InputProcessor {
 	private boolean objectSelected = false;
 	private boolean bottomBarVisible = false;
 	private boolean touchDragged = false;
+	private Vector2 touchStartPos;
+	private Vector2 touchEndDiff;
+	private Vector2 touchEndPos;
 	private boolean controlKey = false;
 	
 	private FPSLogger logger;
+	boolean log = false;
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -122,10 +126,10 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		renderUIComponents();
 		
-		stage.draw();
+		//stage.draw();
 		
-		logger.log();
-
+		if (log) logger.log();
+		
 	}
 
 	public void renderCitizens(float delta) {
@@ -237,6 +241,7 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.end();
 		}
 		
+		
 	}
 	
 	@Override
@@ -282,6 +287,10 @@ public class GameScreen implements Screen, InputProcessor {
 			 controlKey = true;
 			 break;
 
+		case Input.Keys.TAB:
+			if (log) log = false;
+			else log = true;
+			break;
 		}
 
 	//	float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
@@ -309,7 +318,7 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 	
-	
+		touchStartPos = new Vector2(screenX,screenY);
 		
 		return false;
 	}
@@ -320,8 +329,8 @@ public class GameScreen implements Screen, InputProcessor {
 			// Which one was touched?
 		}
 		else {
-			addMany(position);
-			// addSingle(position);
+			//addMany(position);
+			 addSingle(position);
 		}
 		
 	}
@@ -380,14 +389,26 @@ public class GameScreen implements Screen, InputProcessor {
 						unselectAll(p);
 						p.toggleSelected();
 							
-						if (p.isSelected()) currentObjects.add(p);
-						else currentObjects.remove(p);
+						if (p.isSelected()) {
+							currentObjects.add(p);
+							p.pause();
+						}
+						else {
+							currentObjects.remove(p);
+							p.unpause();
+						}
 						done = true;
 					}
 					else {
 						p.toggleSelected();
-						if (p.isSelected()) currentObjects.add(p);
-						else currentObjects.remove(p);							
+						if (p.isSelected()) {
+							currentObjects.add(p);
+							p.pause();
+						}
+						else {
+							currentObjects.remove(p);
+							p.unpause();
+						}
 					}
 				} // end overlap check
 			}
@@ -411,6 +432,7 @@ public class GameScreen implements Screen, InputProcessor {
 			GameObject o = iter.next();
 			if (p != o) {
 				o.unselect();
+				
 			}
 		}
 		// Clear everything, even P - it will be added later
@@ -432,15 +454,10 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		Vector2 position = screenToWorld(screenX,screenY);
-
-		if (touchDragged) {
-			
-		}
-		else {
-			if (button == 0) leftClick(position);
-			if (button == 1) rightClick(position);
-			else middleClick(position);
-		}
+	
+		if (button == 0) leftClick(position);
+		if (button == 1) rightClick(position);
+		else middleClick(position);
 		
 		touchDragged = false;
 		return false;
@@ -449,7 +466,10 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		touchDragged = true;
-		
+				
+		touchEndPos = new Vector2(screenX,(screenHeight - screenY));
+		touchEndDiff =	touchEndPos.sub(touchStartPos);
+			
 		return false;
 		
 	}
