@@ -79,7 +79,10 @@ public class Person extends GameObject {
 	}
 
 	// Getters
-
+	public boolean isPaused() {
+		return this.pause;
+		
+	}
 	public int getStrength() {
 		return strength;
 	}
@@ -146,7 +149,7 @@ public class Person extends GameObject {
 		}
 		// wander
 		else {
-			Utils.log(this.frameCount + "frames, waiting until " + this.frameWaitInterval);
+			//Utils.log(this.frameCount + "frames, waiting until " + this.frameWaitInterval);
 			if (this.left) {
 				this.position.x -= (delta * (float) (this.speed * 0.20));
 

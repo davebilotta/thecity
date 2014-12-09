@@ -9,6 +9,8 @@ import com.davebilotta.thecity.Person.Gender;
 public class City {
 
 	ArrayList<Person> citizens;
+	ArrayList<GameObject> buildings;
+	
 	//
 	TheCity game;
 	private float ageSeconds;
@@ -23,15 +25,25 @@ public class City {
 		this.ageYears = 0;
 		
 		this.citizens = new ArrayList<Person>();
+		this.buildings = new ArrayList<GameObject>();
 		
 	}
 		
 	public void addCitizen(int i,TheCity game,Vector2 position) {
 		citizens.add(new Person(i,game,position));
 	}
+		
+	public void addBuilding(int i,TheCity game,Vector2 position) {
+		Utils.log("Adding building at " + position.x + ", " + position.y);
+		buildings.add(new GameObject(i,game,position));
+	}
 	
 	public int numCitizens() {
 		return this.citizens.size();
+	}
+	
+	public int numBuildings() {
+		return this.buildings.size();
 	}
 	
 	private double averageIntelligence() {

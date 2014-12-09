@@ -5,34 +5,30 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.davebilotta.thecity.Person.Gender;
 
 public class GameScreen implements Screen, InputProcessor {
 
 	TheCity game;
-	
 	SpriteBatch batch;
 
 	private Stage stage;
@@ -51,11 +47,14 @@ public class GameScreen implements Screen, InputProcessor {
 	// UI Components for header
 	Label populationText;
 	Label ageText;
+	boolean bottomBarVisible = false;
+	
+	private ScreenRenderer renderer;
 	
 	private GameObject currentObject;
 	private ArrayList<GameObject> currentObjects = new ArrayList<GameObject>();
 	private boolean objectSelected = false;
-	private boolean bottomBarVisible = false;
+	
 	private boolean touchDragged = false;
 	private Vector2 touchStartPos;
 	private Vector2 touchEndDiff;
@@ -68,7 +67,7 @@ public class GameScreen implements Screen, InputProcessor {
 	public GameScreen(TheCity game) {
 		this.game = game;
 		this.batch = new SpriteBatch();
-
+		
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
 
@@ -79,7 +78,8 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		camera = new OrthographicCamera(screenWidth,screenHeight);
 		stage = new Stage(new ScreenViewport());
-		sr = new ShapeRenderer();
+		
+		this.renderer = new ScreenRenderer(game,this,batch);
 		
 		boolean largeMap = false;
 		if (largeMap) {
@@ -94,7 +94,14 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 				
-		Gdx.input.setInputProcessor(this);
+		
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		inputMultiplexer.addProcessor(stage);
+		inputMultiplexer.addProcessor(this);
+		Gdx.input.setInputProcessor(inputMultiplexer);
+		
+//		Gdx.input.setInputProcessor(this);
+		
 
 		worldX = (mapWidth - renderWidth) * tileSize;
 		worldY = (mapHeight - renderHeight) * tileSize;
@@ -120,95 +127,14 @@ public class GameScreen implements Screen, InputProcessor {
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 		
-		batch.begin();
-		renderCitizens(delta);
-		batch.end();
+		renderer.render(delta);
 		
-		renderUIComponents();
+		stage.draw();
 		
-		//stage.draw();
+	
 		
 		if (log) logger.log();
 		
-	}
-
-	public void renderCitizens(float delta) {
-		Person p;
-		Texture texture;
-
-		Iterator<Person> i = this.game.city.citizens.iterator();
-		// TODO: Only render those whose tileX and tileY are within the viewing
-		// window
-		while (i.hasNext()) {
-			p = i.next();
-
-			// figure out if in view
-			if (inView(p)) {
-				
-			if (p.isSelected()) {
-				texture = Assets.white_dot;
-							}
-			else {
-				if (p.getGender() == Gender.MALE)
-					texture = Assets.blue_dot;
-				else {
-					if (p.fertile)
-						texture = Assets.green_dot;
-					else
-						texture = Assets.red_dot;
-				}
-			}
-
-				Vector2 screenPos = worldToScreen(p.getPosition());
-				// TODO: need to factor item's size when rendering
-				batch.draw(texture,screenPos.x,screenPos.y);
-				
-				if (p.isSelected()) {
-					renderHealthBar(p,screenPos);
-				}
-				
-			}
-		} // end while
-
-		
-	}
-	
-	public void renderHealthBar (GameObject p, Vector2 pos) {
-		// display at
-		int healthSize = 4;
-		int health = p.getHealth();
-		// render max of 8
-		//int h = Math.floor((double) (((health/100) * itemSize) / healthSize));
-		int h = (int) ((double) (health/100.0f) * itemSize) / healthSize;
-		
-		//Utils.log("drawing " + h + " bars");
-		
-		for (int i = 0; i < h; i++) {
-		batch.draw(Assets.health,(pos.x + (healthSize * i)),pos.y + itemSize + 5);
-		}
-	}
-
-	public boolean inView(GameObject item) {
-		// position = position in world
-		Vector2 position = item.getPosition();
-
-		if (((position.x + itemSize/2)>= worldX) && (position.x <= (screenWidth + worldX))
-		&& ((position.y + itemSize/2)>= worldY) && (position.y <= (screenHeight + worldY)) ) {
-			
-			return true;
-		} else {
-
-			return false;
-		}
-	}
-	
-	public Vector2 worldToScreen(Vector2 position) {
-		return new Vector2(((position.x - worldX)),
-				(( (position.y - worldY))) );
-	}
-	
-	public Vector2 screenToWorld(float screenX, float screenY) {
-		return new Vector2((screenX + worldX ),((screenHeight - screenY + worldY)));
 	}
 
 	public void createUI() {
@@ -222,28 +148,29 @@ public class GameScreen implements Screen, InputProcessor {
 		stage.addActor(populationText);
 		stage.addActor(ageText);
 		
+		Image buildButton = new Image(Assets.ui[0]);
+		
+		buildButton.setPosition(20, 20);
+		buildButton.setBounds(20, 20, 100,100);
+		buildButton.setVisible(true);
+		
+		buildButton.addListener(new InputListener() {
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				Utils.log("down");
+				return true;
+			}
+
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+				Utils.log("up");
+			}
+		});
+		
+		stage.addActor(buildButton);
 
 		
 	}
 	
-	public void renderUIComponents() {
-		// render city information
-		// Update population and age (top bar)
-		populationText.setText(this.game.city.getPopulationText());
-		ageText.setText(this.game.city.getAgeText());
-		
-		if (bottomBarVisible) {
-			sr.begin(ShapeType.Filled);
-			sr.setColor(Color.OLIVE);
-		
-		// Render bottom bar - height = 2 tiles high (64px)
-		sr.rect(0, 0, screenWidth, (tileSize * 2));
-		sr.end();
-		}
-		
-		
-	}
-	
+
 	@Override
 	public void resize(int width, int height) {
 		screenWidth = Gdx.graphics.getWidth();
@@ -290,6 +217,11 @@ public class GameScreen implements Screen, InputProcessor {
 		case Input.Keys.TAB:
 			if (log) log = false;
 			else log = true;
+			break;
+			
+		case Input.Keys.B:
+			this.game.city.addBuilding(this.game.city.numBuildings()+1, this.game, 
+					new Vector2(this.game.eventManager.randomInt(1024),this.game.eventManager.randomInt(800)));
 			break;
 		}
 
@@ -381,7 +313,7 @@ public class GameScreen implements Screen, InputProcessor {
 		while (i.hasNext() && !done) {
 			p = i.next();
 			
-			if (inView(p)) {
+			if (renderer.inView(p)) {
 				Rectangle checkRect = new Rectangle(p.getPosition().x,p.getPosition().y,itemSize,itemSize);
 				
 				if (touchRect.overlaps(checkRect)) {
@@ -417,8 +349,7 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		if (currentObjects.size() == 0) objectSelected = false;
 		else objectSelected = true;
-		
-		
+				
 		bottomBarVisible = objectSelected;
 		// TODO: Check buildings, tourists, etc.
 		if (done) return done;
@@ -453,7 +384,7 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		Vector2 position = screenToWorld(screenX,screenY);
+		Vector2 position = renderer.screenToWorld(screenX,screenY);
 	
 		if (button == 0) leftClick(position);
 		if (button == 1) rightClick(position);
@@ -507,7 +438,7 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
-		batch.dispose();
+		renderer.batch.dispose();
 		stage.dispose();
 
 		Assets.dispose();

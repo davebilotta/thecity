@@ -4,20 +4,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 
 public class Assets {
 
 	public static ArrayList<Texture> textures;
-
+	public static ArrayList<Sprite> sprites;
+	
 	public static Texture grass, water, road, red_dot, orange_dot, yellow_dot,
 			green_dot, blue_dot, white_dot,health;
 
+	
+	public static Texture low_income_housing;
+	public static TextureRegion[] ui = new TextureRegion[1];
+	
+	public static Sprite buildButton;
+	
 	public static LabelStyle menuLabelStyle;
 	public static BitmapFont menuFont;
 
@@ -39,11 +47,19 @@ public class Assets {
 		grass = createTexture("tiles/rpgTile019.png");
 		water = createTexture("tiles/rpgTile029.png");
 		road = createTexture("tiles/rpgTile024.png");
+
+		low_income_housing = createTexture("lih.png");
 		
 		health = createTexture("health.png");
 
+		// Texture regions 
+		Texture uiTemp = createTexture("yellowSheet.png");
+		ui[0] = new TextureRegion(uiTemp,190,94,100,100);
+		
+
 	}
 
+	
 	@SuppressWarnings("deprecation")
 	public static void loadFonts() {
 
@@ -66,7 +82,6 @@ public class Assets {
 		while (iter.hasNext()) {
 			iter.next().dispose();
 		}
-
 	}
 
 	/*
@@ -80,4 +95,6 @@ public class Assets {
 
 		return text;
 	}
+
+
 }

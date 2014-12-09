@@ -1,5 +1,6 @@
 package com.davebilotta.thecity;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,7 +13,7 @@ public class GameObject {
 	Rectangle touchPoint;
 	private boolean selected;
 	private boolean alive;
-	
+	Texture texture;
 	
 	private int health;
 	
@@ -33,6 +34,11 @@ public class GameObject {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public Texture getTexture() {
+		// TODO: Eventually store texture for real 
+		return Assets.low_income_housing;
 	}
 	
 	public Vector2 getPosition() { 
