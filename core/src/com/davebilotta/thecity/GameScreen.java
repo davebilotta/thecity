@@ -456,7 +456,12 @@ public class GameScreen implements Screen, InputProcessor {
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		// -amount = up on scrollwheel, +amount = down
-		Utils.log("Scrolled " + amount);
+		
+		this.camera.zoom += (amount * 0.25f);
+		
+		if (this.camera.zoom < 0.25f) this.camera.zoom = 0.25f;
+		if (this.camera.zoom > 2.0f) this.camera.zoom = 2.0f;
+
 		return false;
 	}
 
