@@ -22,13 +22,14 @@ public class Assets {
 
 	
 	public static Texture low_income_housing;
-	public static TextureRegion[] ui = new TextureRegion[1];
+	public static TextureRegion[] ui = new TextureRegion[9];
 	
 	public static Sprite buildButton;
 	
 	public static LabelStyle menuLabelStyle;
-	public static BitmapFont menuFont;
-
+	public static BitmapFont buttonFont, messageFont, menuFont;
+	public static LabelStyle buttonLabelStyle;
+	
 	public static void load() {
 		loadTextures();
 		loadFonts();
@@ -53,10 +54,17 @@ public class Assets {
 		health = createTexture("health.png");
 
 		// Texture regions 
-		Texture uiTemp = createTexture("yellowSheet.png");
-		ui[0] = new TextureRegion(uiTemp,190,94,100,100);
+		//Texture uiTemp = createTexture("uipack_rpg_sheet.png");
 		
-
+		ui[0] = new TextureRegion(new Texture("ui/bar1.png"));
+		ui[1] = new TextureRegion(new Texture("ui/bar2.png"));
+		ui[2] = new TextureRegion(new Texture("ui/bar3.png"));
+		ui[3] = new TextureRegion(new Texture("ui/bar4.png"));
+		ui[4] = new TextureRegion(new Texture("ui/buttonBeige.png"));
+		ui[5] = new TextureRegion(new Texture("ui/buttonBeigePressed.png"));
+		ui[6] = new TextureRegion(new Texture("ui/buttonBrown.png"));
+		ui[7] = new TextureRegion(new Texture("ui/buttonBrownPressed.png"));
+		ui[8] = new TextureRegion(new Texture("ui/bar7.png"));
 	}
 
 	
@@ -71,6 +79,8 @@ public class Assets {
 		menuLabelStyle.font = menuFont;
 		menuLabelStyle.fontColor = Color.WHITE;
 
+		buttonFont = generator.generateFont(10);
+		messageFont = generator.generateFont(16);
 		generator.dispose();
 	}
 

@@ -1,11 +1,13 @@
 package com.davebilotta.thecity;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class EventManager {
 	
 	TheCity game;
-
+	ArrayList<String> messages;
+	
 	Random random;
 	private enum EventTypes {
 		BIRTH,DEATH,MARRIAGE
@@ -14,6 +16,7 @@ public class EventManager {
 	public EventManager (TheCity game) {
 		this.game = game;
 		this.random = new Random();
+		this.messages = new ArrayList<String>();
 	
 	}
 		
@@ -33,5 +36,14 @@ public class EventManager {
 		// This adds a single one
 		//this.game.city.addCitizen(game);
 		
+	}
+	
+	public void logMessage(String msg) {
+		messages.add(msg);
+	}
+	
+	public String lastMessage() {
+		
+		return messages.get(messages.size()-1);
 	}
 }

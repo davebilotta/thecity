@@ -8,10 +8,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -23,7 +26,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton.ImageTextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameScreen implements Screen, InputProcessor {
@@ -63,6 +72,8 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	private FPSLogger logger;
 	boolean log = false;
+	
+	ImageTextButton messageButton;
 	
 	public GameScreen(TheCity game) {
 		this.game = game;
@@ -130,9 +141,7 @@ public class GameScreen implements Screen, InputProcessor {
 		renderer.render(delta);
 		
 		stage.draw();
-		
-	
-		
+			
 		if (log) logger.log();
 		
 	}
@@ -141,20 +150,13 @@ public class GameScreen implements Screen, InputProcessor {
 		populationText = new Label("Population: 0",Assets.menuLabelStyle);
 		populationText.setPosition(0,screenHeight - populationText.getHeight());
 		
-		ageText = new Label("0m0y",Assets.menuLabelStyle);
-		// TODO: Fix this position
-		ageText.setPosition(screenWidth - 250, screenHeight - ageText.getHeight());
+		ageText = new Label("age",Assets.menuLabelStyle);
+		ageText.setPosition(screenWidth - ageText.getWidth(), screenHeight - ageText.getHeight());
 		
 		stage.addActor(populationText);
 		stage.addActor(ageText);
 		
-		Image buildButton = new Image(Assets.ui[0]);
-		
-		buildButton.setPosition(20, 20);
-		buildButton.setBounds(20, 20, 100,100);
-		buildButton.setVisible(true);
-		
-		buildButton.addListener(new InputListener() {
+		addButton("Build",Assets.ui[6],Assets.ui[7], 10,10, 45,45, true).addListener(new InputListener() {
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 				Utils.log("down");
 				return true;
@@ -163,13 +165,51 @@ public class GameScreen implements Screen, InputProcessor {
 			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 				Utils.log("up");
 			}
-		});
+		}); 
 		
-		stage.addActor(buildButton);
+		
+		messageButton = addButton("",Assets.ui[8],Assets.ui[8], ((int) screenWidth/2 - 250),((int)screenHeight - 56), 500,56, false);
+		messageButton.addListener(new InputListener() {
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				Utils.log("Log Button DOWN");
+				return true;
+			}
 
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+				Utils.log("Log Button UP");
+			}
+		});		
 		
 	}
 	
+	public ImageTextButton addButton(String text, TextureRegion textureUp,TextureRegion textureDown, int x, int y, int w, int h, boolean buttonStyle) {
+
+		ImageTextButtonStyle imageTextButtonStyle = new ImageTextButtonStyle();
+		if (buttonStyle) { 
+			imageTextButtonStyle.font  = Assets.buttonFont;
+			imageTextButtonStyle.fontColor = Color.BLACK;
+		}
+		else {
+			imageTextButtonStyle.font  = Assets.messageFont;
+			imageTextButtonStyle.fontColor = Color.WHITE;
+		}
+		imageTextButtonStyle.imageUp =  new TextureRegionDrawable(textureUp);
+		imageTextButtonStyle.imageDown = new TextureRegionDrawable(textureDown);
+		
+		ImageTextButton button = new ImageTextButton(text,imageTextButtonStyle);
+		
+		Stack s = new Stack();
+		s.add(button.getImage());
+		s.add(button.getLabel());
+		button.add(s);
+		
+		button.setPosition(x, y);
+		button.setBounds(x, y, w,h);
+		button.setVisible(true);
+							
+		stage.addActor(button);
+		return button;
+	}	
 
 	@Override
 	public void resize(int width, int height) {

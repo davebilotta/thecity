@@ -130,6 +130,12 @@ public class ScreenRenderer {
 		this.screen.populationText.setText(this.game.city.getPopulationText());
 		this.screen.ageText.setText(this.game.city.getAgeText());
 		
+		this.screen.messageButton.setText(this.game.eventManager.lastMessage());
+		
+		this.screen.ageText.setPosition(this.game.screen.screenWidth - 200, 
+				this.game.screen.screenHeight + 20 );
+		//this.screen.ageText.getHeight());
+		
 		if (this.screen.bottomBarVisible) {
 			sr.begin(ShapeType.Filled);
 			sr.setColor(Color.OLIVE);

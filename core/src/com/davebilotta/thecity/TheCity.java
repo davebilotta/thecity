@@ -49,6 +49,8 @@ public class TheCity extends Game {
 		// TODO: Start this at the starting speed based on preferences
 		this.setSpeed(5);
 
+		eventManager.logMessage("City created!");
+		
 	}
 
 	private void setSpeed(int gameSpeed) {
@@ -56,7 +58,7 @@ public class TheCity extends Game {
 		// speed 5 = 1 real life minute per month
 		
 		if (gameSpeed > 5 || gameSpeed < 0) {
-			gameMonthSeconds = 300;
+			gameMonthSeconds = 500;
 		}
 		else {
 			gameMonthSeconds = 300 - ((gameSpeed -1)* 60);

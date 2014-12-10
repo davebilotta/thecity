@@ -162,6 +162,11 @@ public class City {
 			if (this.ageMonths > 11) {
 				this.ageYears++;
 				this.ageMonths = 0;
+				
+				String yr;
+				if (this.ageYears == 1) yr = "year";
+				else yr = "years";
+				this.game.eventManager.logMessage("Your city is " + this.ageYears + " " + yr + " old. Happy Anniversary!");
 			}
 			
 			this.reportStatus();
