@@ -158,12 +158,12 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		addButton("Build",Assets.ui[6],Assets.ui[7], 10,10, 45,45, true).addListener(new InputListener() {
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-				Utils.log("down");
+				
 				return true;
 			}
 
 			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-				Utils.log("up");
+				buildButton();
 			}
 		}); 
 		
@@ -260,8 +260,9 @@ public class GameScreen implements Screen, InputProcessor {
 			break;
 			
 		case Input.Keys.B:
-			this.game.city.addBuilding(this.game.city.numBuildings()+1, this.game, 
-					new Vector2(this.game.eventManager.randomInt(1024),this.game.eventManager.randomInt(800)));
+			//this.game.city.addBuilding(this.game.city.numBuildings()+1, this.game, 
+			//		new Vector2(this.game.eventManager.randomInt(1024),this.game.eventManager.randomInt(800)));
+			buildButton();
 			break;
 		}
 
@@ -305,6 +306,11 @@ public class GameScreen implements Screen, InputProcessor {
 			 addSingle(position);
 		}
 		
+	}
+	
+	public void buildButton() {
+		if (bottomBarVisible) bottomBarVisible = false;
+		else bottomBarVisible = true;
 	}
 	
 	public void addSingle(Vector2 position) {
@@ -390,7 +396,7 @@ public class GameScreen implements Screen, InputProcessor {
 		if (currentObjects.size() == 0) objectSelected = false;
 		else objectSelected = true;
 				
-		bottomBarVisible = objectSelected;
+		//bottomBarVisible = objectSelected;
 		// TODO: Check buildings, tourists, etc.
 		if (done) return done;
 		else return objectSelected;

@@ -72,9 +72,11 @@ public class Person extends GameObject {
 		this.action = action.WANDERING;
 		this.left = this.game.eventManager.randomBoolean();
 
-		Utils.log("Creating " + this.gender + " with intelligence: "
+		String msg = "Creating " + this.gender + " with intelligence: "
 				+ this.intelligence + ", strength: " + this.strength
-				+ " starting at " + position.x + "," + position.y);
+				+ " starting at " + position.x + "," + position.y;
+		this.game.eventManager.logMessage(msg);
+		Utils.log(msg);
 
 	}
 

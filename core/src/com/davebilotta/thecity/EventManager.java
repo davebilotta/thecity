@@ -7,7 +7,8 @@ public class EventManager {
 	
 	TheCity game;
 	ArrayList<String> messages;
-	
+	boolean messageDisplayed;
+	float messageDuration;
 	Random random;
 	private enum EventTypes {
 		BIRTH,DEATH,MARRIAGE
@@ -38,12 +39,29 @@ public class EventManager {
 		
 	}
 	
+	public void update(float delta) {
+		this.messageDuration -= delta;
+		
+		if (this.messageDuration <=0) messageDisplayed = false; 
+	}
+	
 	public void logMessage(String msg) {
 		messages.add(msg);
+		messageDisplayed = true;
+		messageDuration = 5;
+	}
+	
+	public void clearMessage() {
+		messageDisplayed = true;
 	}
 	
 	public String lastMessage() {
 		
-		return messages.get(messages.size()-1);
+		if (messageDisplayed) { 
+			return messages.get(messages.size()-1);
+		}
+		else {
+			return "";
+		}
 	}
 }

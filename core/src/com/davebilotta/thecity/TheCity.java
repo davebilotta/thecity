@@ -70,6 +70,7 @@ public class TheCity extends Game {
 
 		updateCity(delta);
 		updateCitizens(delta);
+		updateManager(delta);
 
 		if (this.delta > EVENT_THRESHOLD) {
 			this.delta = 0;
@@ -94,4 +95,7 @@ public class TheCity extends Game {
 			}
 		}
 
+	public void updateManager(float delta) {
+		this.eventManager.update(delta);
+	}
 }
